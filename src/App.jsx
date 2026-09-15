@@ -21,13 +21,45 @@ import {
 
 export default function App() {
   const [copied, setCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState('about');
+
+  const navItems = [
+    { id: 'about', label: 'About' },
+    { id: 'impact', label: 'Impact' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'experience', label: 'Experience' },
+    { id: 'certifications', label: 'Certs' },
+    { id: 'education', label: 'Education' }
+  ];
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2500);
-    return () => clearTimeout(timer);
+    const getCurrentSection = () => {
+      const sections = navItems
+        .map(item => document.getElementById(item.id))
+        .filter(Boolean);
+
+      if (!sections.length) return;
+
+      const scrollOffset = window.scrollY + 140;
+      let currentSection = sections[0].id;
+
+      sections.forEach(section => {
+        if (section.offsetTop <= scrollOffset) {
+          currentSection = section.id;
+        }
+      });
+
+      setActiveSection(currentSection);
+    };
+
+    getCurrentSection();
+    window.addEventListener('scroll', getCurrentSection, { passive: true });
+    window.addEventListener('hashchange', getCurrentSection);
+
+    return () => {
+      window.removeEventListener('scroll', getCurrentSection);
+      window.removeEventListener('hashchange', getCurrentSection);
+    };
   }, []);
 
   const handleCopyEmail = () => {
@@ -36,21 +68,22 @@ export default function App() {
     setTimeout(() => setCopied(false), 2200);
   };
 
-  if (loading) {
-    return (
-      <div className="loader-overlay">
-        <div id="triangle">
-          <svg id="Layer_1" data-name="Layer 1" version="1.1" viewBox="0 0 2000 2000">
-            <polygon className="cls-1" points="928 781 1021 951 784.5 1371.97 1618 1371.97 1530.32 1544 509 1539 928 781"></polygon>
-            <polygon className="cls-3" points="1618 1371.97 784.5 1371.97 874.93 1211 1346 1211 923.1 456 1110.06 456 1618 1371.97"></polygon>
-            <g id="Layer_2" data-name="Layer 2">
-              <polygon className="cls-2" points="418 1372.74 509 1539 928 781 1162.32 1211 1346 1211 923.1 456 418 1372.74"></polygon>
-            </g>
-          </svg>
-        </div>
-      </div>
-    );
-  }
+  const handleNavClick = (event, targetId) => {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    event.preventDefault();
+    const offset = document.querySelector('.nav-bar')?.offsetHeight || 56;
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+
+    window.scrollTo({
+      top,
+      behavior: 'smooth'
+    });
+
+    window.history.pushState(null, '', `#${targetId}`);
+    setActiveSection(targetId);
+  };
 
   return (
     <div className="page-wrapper">
@@ -58,17 +91,17 @@ export default function App() {
       {/* ── NAVIGATION ── */}
       <header className="nav-bar">
         <div className="container-custom nav-inner">
-          <a href="#about" className="nav-logo">
-            MG
-          </a>
-
           <nav className="nav-links">
-            <a href="#about">About</a>
-            <a href="#impact">Impact</a>
-            <a href="#skills">Skills</a>
-            <a href="#experience">Experience</a>
-            <a href="#certifications">Certs</a>
-            <a href="#education">Education</a>
+            {navItems.map(item => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className={activeSection === item.id ? 'active' : ''}
+                onClick={(event) => handleNavClick(event, item.id)}
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
 
           <a href="#contact" className="nav-cta">
