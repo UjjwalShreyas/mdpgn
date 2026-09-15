@@ -3,8 +3,6 @@
    Cream 60% · Slate Blue 25% · Dark/Black 10% · Orange 5%
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-
 :root {
   /* ── Core Palette ── */
   --cream: #e8d8c9;
@@ -40,8 +38,8 @@
 
   --accent: var(--orange);
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 *,
